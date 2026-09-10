@@ -116,7 +116,17 @@
   /* 3D stage: entrance swing, idle float, cursor tilt (desktop pointer only) */
   .tilt{perspective:1400px;perspective-origin:50% 42%;animation:phone-float 9s ease-in-out 2.2s infinite}
   .phone-hero{transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;
-    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(0);transition:transform .8s var(--ease)}
+    transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(0);transition:transform .8s var(--ease);
+    touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  /* drag to swivel: transparent layer over the video so the iframe doesn't swallow the pointer */
+  .drag-layer{position:absolute;inset:0;z-index:3;cursor:grab}
+  .phone-hero.is-dragging{transition:none}
+  .phone-hero.is-dragging .drag-layer{cursor:grabbing}
+  .phone-hero.is-spring{transition:transform .9s cubic-bezier(.34,1.45,.64,1)}
+  .hero-hint{margin:-10px 0 0;display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);opacity:.85;transition:opacity .6s,transform .6s}
+  .hero-hint svg{width:18px;height:18px;animation:hint-nudge 2.4s ease-in-out infinite}
+  .hero-hint.gone{opacity:0;transform:translateY(4px);pointer-events:none}
+  @keyframes hint-nudge{0%,100%{transform:translateX(0)}30%{transform:translateX(-3px)}70%{transform:translateX(3px)}}
   .hero-stage.in .phone-hero{animation:phone-in 1.5s var(--ease) backwards}
   .phone-hero .screen{-webkit-mask-image:-webkit-radial-gradient(#fff,#000)}
   @keyframes phone-in{
@@ -139,6 +149,7 @@
     .tilt{animation:none}
     .hero-stage.in .phone-hero{animation:none}
     .phone-hero{transition:none}
+    .hero-hint svg{animation:none}
   }
   @media (max-width:720px){.hero-bg img,.hero-bg video{opacity:.42}}
   @media (max-width:960px){
@@ -379,6 +390,7 @@
               <span class="ring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
               <span class="lbl">Play</span>
             </button>
+            <div class="drag-layer" aria-hidden="true"></div>
             <span class="made"><i aria-hidden="true"></i><span class="mw">Made with&nbsp;</span>Flow · Suno · CapCut</span>
             <button class="sound" id="hero-sound" type="button" hidden aria-label="Turn sound on">
               <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg><span>Tap for sound</span>
@@ -387,6 +399,7 @@
         </div>
       </div>
       <p class="hero-cap"><b>One of the ads you'll make.</b> Built in a day.</p>
+      <p class="hero-hint" id="hero-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg>Drag the phone to swivel it</p>
     </div>
   </div>
 </section>
@@ -811,29 +824,74 @@
     if (!entries[0].isIntersecting && players.hero && !heroMuted) { soundBtn.click(); }
   }, {threshold:0.1}).observe(document.getElementById('hero-screen'));
 
-  // hero phone: cursor tilt — desktop pointer devices only, armed after the entrance swing, off under reduced motion
+  // hero phone: 3D swivel. Two inputs share the same --rx/--ry vars:
+  //  1) drag to swivel (finger, trackpad, mouse) — bounded, springs back on release
+  //  2) cursor tilt on desktop pointer devices — armed after the entrance swing, off under reduced motion
   var tiltBox = document.getElementById('hero-tilt'), heroPhone = document.getElementById('hero-phone'), heroSec = document.getElementById('top');
+  var screenEl = document.getElementById('hero-screen'), heroHint = document.getElementById('hero-hint');
+  var dragging = false, settleUntil = 0;
+  function setAngles(rx, ry){
+    heroPhone.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+    heroPhone.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+  }
+  if (heroPhone) {
+    // No pointer capture: a press that never moves stays an ordinary click (Play, Tap for sound);
+    // once it moves past the threshold it becomes a drag and the trailing click is swallowed.
+    var pid = null, sx = 0, sy = 0, bx = 0, by = 0, moved = false, swallowClick = false;
+    var DRAG_Y = 44, DRAG_X = 14, KY = .28, KX = .12, THRESH = 5;
+    heroPhone.addEventListener('pointerdown', function(e){
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (e.target.closest('a')) return;
+      pid = e.pointerId; moved = false; sx = e.clientX; sy = e.clientY;
+      bx = parseFloat(heroPhone.style.getPropertyValue('--ry')) || 0;
+      by = parseFloat(heroPhone.style.getPropertyValue('--rx')) || 0;
+    });
+    document.addEventListener('pointermove', function(e){
+      if (pid === null || e.pointerId !== pid) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!moved) {
+        if (Math.abs(dx) < THRESH && Math.abs(dy) < THRESH) return;
+        moved = true; dragging = true;
+        heroPhone.classList.add('is-dragging'); heroPhone.classList.remove('is-spring');
+      }
+      setAngles(Math.max(-DRAG_X, Math.min(DRAG_X, by - dy * KX)),
+                Math.max(-DRAG_Y, Math.min(DRAG_Y, bx + dx * KY)));
+    }, {passive:true});
+    function endDrag(e){
+      if (pid === null || (e && e.pointerId !== pid)) return;
+      pid = null;
+      if (!moved) return;
+      dragging = false;
+      heroPhone.classList.remove('is-dragging');
+      if (!reduce) heroPhone.classList.add('is-spring');
+      setAngles(0, 0);
+      settleUntil = Date.now() + 950;
+      setTimeout(function(){ heroPhone.classList.remove('is-spring'); }, 950);
+      if (heroHint) heroHint.classList.add('gone');
+      swallowClick = true; setTimeout(function(){ swallowClick = false; }, 400);
+    }
+    document.addEventListener('pointerup', endDrag);
+    document.addEventListener('pointercancel', endDrag);
+    heroPhone.addEventListener('click', function(e){
+      if (swallowClick) { swallowClick = false; e.stopPropagation(); e.preventDefault(); }
+    }, true);
+  }
   if (tiltBox && heroPhone && heroSec && !reduce && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
     var armed = false, raf = 0, nx = 0, ny = 0, MAX_Y = 11, MAX_X = 7;
     function arm(){ armed = true; }
     heroPhone.addEventListener('animationend', arm, {once:true});
     setTimeout(arm, 3200); // fallback if the entrance animation never fires
-    function apply(){
-      raf = 0;
-      heroPhone.style.setProperty('--ry', (-nx * MAX_Y).toFixed(2) + 'deg');
-      heroPhone.style.setProperty('--rx', ( ny * MAX_X).toFixed(2) + 'deg');
-    }
-    var screenEl = document.getElementById('hero-screen');
+    function apply(){ raf = 0; setAngles(ny * MAX_X, -nx * MAX_Y); }
     heroSec.addEventListener('pointermove', function(e){
-      if (!armed || e.pointerType !== 'mouse') return;
-      if (screenEl.contains(e.target)) { settle(); return; }
+      if (!armed || dragging || Date.now() < settleUntil || e.pointerType !== 'mouse') return;
+      if (heroPhone.contains(e.target)) { settle(); return; }
       var r = tiltBox.getBoundingClientRect();
       var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
       nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth * .5)));
       ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (r.height * .9)));
       if (!raf) raf = requestAnimationFrame(apply);
     });
-    function settle(){ nx = 0; ny = 0; if (!raf) raf = requestAnimationFrame(apply); }
+    function settle(){ if (dragging) return; nx = 0; ny = 0; if (!raf) raf = requestAnimationFrame(apply); }
     heroSec.addEventListener('pointerleave', settle);
     // the YouTube iframe swallows pointer events, so settle flat when the cursor reaches the screen itself
     screenEl.addEventListener('pointerenter', settle);
