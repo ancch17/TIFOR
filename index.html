@@ -7,13 +7,13 @@
 <meta name="description" content="Direct a cinematic retail ad with Google Flow, score it with Suno and cut it in CapCut — in one day, at Tembusu Institute. SkillsFuture-claimable. Tembusu Certificate on completion.">
 <meta name="theme-color" content="#09090b">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="canonical" href="https://ancch17.github.io/TIFOR/">
+<link rel="canonical" href="https://ac-eduworks.com/tifor/">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="AI Animation for Retail — Product Videos & Social Ads">
 <meta property="og:description" content="One day. Three AI tools. One finished retail ad you made yourself. SkillsFuture-claimable at Tembusu Institute.">
-<meta property="og:image" content="https://ancch17.github.io/TIFOR/assets/og.jpg">
-<meta property="og:url" content="https://ancch17.github.io/TIFOR/">
+<meta property="og:image" content="https://ac-eduworks.com/tifor/assets/og.jpg">
+<meta property="og:url" content="https://ac-eduworks.com/tifor/">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preload" href="assets/fonts/cormorant.woff2" as="font" type="font/woff2" crossorigin>
@@ -111,65 +111,8 @@
   .hero-cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
   .hero-note{margin-top:30px;font-size:.78rem;color:var(--muted);letter-spacing:.04em}
   .hero-note b{color:var(--ink-2);font-weight:500}
-  .hero-stage{display:flex;flex-direction:column;align-items:center;gap:22px;position:relative}
-  .hero-stage::before{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-56%);width:520px;height:520px;border-radius:50%;background:radial-gradient(circle, rgba(214,184,120,.22), transparent 62%);filter:blur(20px);z-index:-1;pointer-events:none}
-  /* 3D stage: entrance swing, idle float, cursor tilt (desktop pointer only) */
-  .tilt{perspective:1400px;perspective-origin:50% 42%;animation:phone-float 9s ease-in-out 2.2s infinite}
-  /* the hero phone is a real 3D object: front (frame + screen), three edge slices, and a back face.
-     --spin = accumulated drag rotation (multiples of 360deg at rest); --rx/--ry = cursor tilt / nod */
-  .phone-hero{transform-style:preserve-3d;backface-visibility:hidden;will-change:transform;
-    transform:rotateX(var(--rx,0deg)) rotateY(calc(var(--spin,0deg) + var(--ry,0deg)));transition:transform .8s var(--ease);
-    touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
-  .phone-hero::after,.phone-hero .island,.phone-hero .screen{backface-visibility:hidden}
-  .phone-hero .screen{transform:translateZ(.5px)}
-  .phone-hero .edge{position:absolute;inset:0;border-radius:46px;background:#0c0c0f;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
-  .phone-hero .e1{transform:translateZ(-2px)}.phone-hero .e2{transform:translateZ(-4px)}.phone-hero .e3{transform:translateZ(-6px)}
-  .phone-back{position:absolute;inset:0;border-radius:46px;transform:translateZ(-8px) rotateY(180deg);backface-visibility:hidden;
-    background:linear-gradient(160deg,#1c1c21,#0c0c0e 42%,#121216 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09),inset 0 -40px 80px -40px rgba(0,0,0,.7);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12%;overflow:hidden}
-  .phone-back::before{content:"";position:absolute;inset:0;border-radius:46px;background:linear-gradient(115deg,rgba(255,255,255,.08),rgba(255,255,255,0) 30%,rgba(255,255,255,0) 70%,rgba(214,184,120,.06))}
-  .phone-back .cam{position:absolute;top:16px;left:16px;width:31%;aspect-ratio:1;border-radius:24%;background:linear-gradient(150deg,#1f1f24,#0a0a0c);box-shadow:0 0 0 1px rgba(255,255,255,.09),0 8px 18px -8px rgba(0,0,0,.9);display:grid;grid-template-columns:1fr 1fr;place-items:center;padding:12%;gap:8%}
-  .phone-back .cam i{display:block;width:100%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,#3a3a44,#050506 60%);box-shadow:0 0 0 2px #17171b,0 0 0 3px rgba(255,255,255,.12),inset 0 0 6px rgba(120,150,255,.25)}
-  .phone-back .cam b{display:block;width:34%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#f1dfa8,#7a6a3e 70%);opacity:.75;justify-self:center}
-  .back-mark{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:22%}
-  .bm-eyebrow{font-size:.5rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
-  .bm-title{font-family:var(--serif);font-size:clamp(1.5rem,2.4vw,2rem);line-height:1.02;color:var(--gold-2);font-weight:500;letter-spacing:-.01em}
-  .bm-sub{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);padding:8px 14px;border:1px solid rgba(214,184,120,.35);border-radius:999px}
-  .bm-foot{position:absolute;bottom:8%;left:0;right:0;font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  /* drag to spin: transparent layer over the video so the iframe doesn't swallow the pointer */
-  .drag-layer{position:absolute;inset:0;z-index:3;cursor:grab}
-  .phone-hero.is-dragging{transition:none}
-  .phone-hero.is-dragging .drag-layer{cursor:grabbing}
-  .phone-hero.is-spring{transition:transform .9s cubic-bezier(.34,1.35,.64,1)}
-  .hero-hint{margin:-10px 0 0;display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);opacity:.85;transition:opacity .6s,transform .6s}
-  .hero-hint svg{width:18px;height:18px;animation:hint-nudge 2.4s ease-in-out infinite}
-  .hero-hint.gone{opacity:0;transform:translateY(4px);pointer-events:none}
-  @keyframes hint-nudge{0%,100%{transform:translateX(0)}30%{transform:translateX(-3px)}70%{transform:translateX(3px)}}
-  .hero-stage.in .phone-hero{animation:phone-in 2.2s cubic-bezier(.16,.8,.24,1) backwards}
-  .phone-hero .screen{-webkit-mask-image:-webkit-radial-gradient(#fff,#000)}
-  @keyframes phone-in{
-    0%{opacity:0;transform:translateY(34px) rotateX(10deg) rotateY(-390deg)}
-    18%{opacity:1}
-    100%{opacity:1;transform:translateY(0) rotateX(0deg) rotateY(0deg)}
-  }
-  @keyframes phone-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-  .made{position:absolute;top:46px;left:12px;z-index:8;display:inline-flex;align-items:center;gap:7px;padding:7px 11px 7px 9px;border-radius:999px;border:1px solid rgba(214,184,120,.42);background:rgba(9,9,11,.62);backdrop-filter:blur(8px);color:var(--gold-2);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
-  .made i{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(214,184,120,.18)}
-  @media (max-width:720px){.made .mw,.hero-hint .mw{display:none}}
-  .hero-cap{margin:0;font-size:.8rem;color:var(--muted);letter-spacing:.03em;text-align:center;max-width:46ch;line-height:1.5}
-  .hero-cap b{color:var(--gold-2);font-weight:500}
-  /* shorter desktop viewports: keep phone + caption above the fold */
-  @media (min-width:961px) and (max-height:920px){
-    .hero{padding:118px 0 60px}
-    .hero-stage .phone-hero{width:clamp(220px,22.5vw,272px)}
-    .hero-stage{gap:18px}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .tilt{animation:none}
-    .hero-stage.in .phone-hero{animation:none}
-    .phone-hero{transition:none}
-    .hero-hint svg{animation:none}
-  }
+  .hero-stage{display:flex;justify-content:center;position:relative}
+  .hero-stage::before{content:"";position:absolute;inset:auto;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle, rgba(214,184,120,.22), transparent 62%);filter:blur(20px);z-index:-1}
   @media (max-width:720px){.hero-bg img,.hero-bg video{opacity:.42}}
   @media (max-width:960px){
     .hero{padding:120px 0 70px;min-height:auto}
@@ -399,38 +342,20 @@
     </div>
 
     <div class="hero-stage rv rv-d2">
-      <div class="tilt" id="hero-tilt">
-        <div class="phone phone-hero" id="hero-phone">
-          <div class="edge e1" aria-hidden="true"></div>
-          <div class="edge e2" aria-hidden="true"></div>
-          <div class="edge e3" aria-hidden="true"></div>
-          <div class="phone-back" aria-hidden="true">
-            <div class="cam"><i></i><i></i><i></i><b></b></div>
-            <div class="back-mark">
-              <span class="bm-eyebrow">Tembusu Institute × Impactus Learning</span>
-              <span class="bm-title">AI Animation<br>for Retail</span>
-              <span class="bm-sub">Flow · Suno · CapCut</span>
-            </div>
-            <span class="bm-foot">One day. One finished ad.</span>
-          </div>
-          <div class="island" aria-hidden="true"></div>
-          <div class="screen" id="hero-screen">
-            <img class="poster" src="assets/poster-vr.jpg" alt="AI Animation for Retail — the course's hero short" width="540" height="960">
-            <div id="hero-yt" class="yt"></div>
-            <button class="play" type="button" data-video="llfFs7xHSJY" data-target="hero" aria-label="Play the hero video">
-              <span class="ring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
-              <span class="lbl">Play</span>
-            </button>
-            <div class="drag-layer" aria-hidden="true"></div>
-            <span class="made"><i aria-hidden="true"></i><span class="mw">Made with&nbsp;</span>Flow · Suno · CapCut</span>
-            <button class="sound" id="hero-sound" type="button" hidden aria-label="Turn sound on">
-              <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg><span>Tap for sound</span>
-            </button>
-          </div>
+      <div class="phone">
+        <div class="island" aria-hidden="true"></div>
+        <div class="screen" id="hero-screen">
+          <img class="poster" src="assets/poster-vr.jpg" alt="AI Animation for Retail — the course's hero short" width="540" height="960">
+          <div id="hero-yt" class="yt"></div>
+          <button class="play" type="button" data-video="llfFs7xHSJY" data-target="hero" aria-label="Play the hero video">
+            <span class="ring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+            <span class="lbl">Play</span>
+          </button>
+          <button class="sound" id="hero-sound" type="button" hidden aria-label="Turn sound on">
+            <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg><span>Tap for sound</span>
+          </button>
         </div>
       </div>
-      <p class="hero-cap"><b>One of the ads you'll make.</b> Built in a day.</p>
-      <p class="hero-hint" id="hero-hint" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg>Drag or flick <span class="mw">the phone </span>— it spins right round</p>
     </div>
   </div>
 </section>
@@ -809,8 +734,6 @@
         events: {
           onReady: function(e){
             if (opts.muted) e.target.mute(); else e.target.unMute();
-            // keep YouTube's auto-captions ("[Music]") off the screen
-            try { e.target.unloadModule('captions'); e.target.unloadModule('cc'); } catch(err){}
             e.target.playVideo();
             screen.classList.add('is-live');
             if (opts.onReady) opts.onReady(e.target);
@@ -854,104 +777,6 @@
   new IntersectionObserver(function(entries){
     if (!entries[0].isIntersecting && players.hero && !heroMuted) { soundBtn.click(); }
   }, {threshold:0.1}).observe(document.getElementById('hero-screen'));
-
-  // hero phone: 3D swivel. Two inputs share the same --rx/--ry vars:
-  //  1) drag to swivel (finger, trackpad, mouse) — bounded, springs back on release
-  //  2) cursor tilt on desktop pointer devices — armed after the entrance swing, off under reduced motion
-  var tiltBox = document.getElementById('hero-tilt'), heroPhone = document.getElementById('hero-phone'), heroSec = document.getElementById('top');
-  var screenEl = document.getElementById('hero-screen'), heroHint = document.getElementById('hero-hint');
-  var dragging = false, settleUntil = 0;
-  function setAngles(rx, ry){
-    heroPhone.style.setProperty('--ry', ry.toFixed(2) + 'deg');
-    heroPhone.style.setProperty('--rx', rx.toFixed(2) + 'deg');
-  }
-  if (heroPhone) {
-    // Full 360° spin. No pointer capture: a press that never moves stays an ordinary click (Play, Tap for sound);
-    // once it moves past the threshold it becomes a drag and the trailing click is swallowed.
-    // On release the phone keeps spinning with the flick's momentum, then eases to the nearest front-facing turn.
-    var pid = null, sx = 0, sy = 0, bx = 0, by = 0, moved = false, swallowClick = false;
-    var spin = 0, vel = 0, samples = [], inertiaRaf = 0, lastT = 0;
-    var KY = .6, KX = .12, MAX_X = 14, THRESH = 5, VMAX = 1.6, FRICTION = .955, VSTOP = .025;
-    function setSpin(v){ spin = v; heroPhone.style.setProperty('--spin', v.toFixed(2) + 'deg'); }
-    function finish(now){
-      var target = Math.round(spin / 360) * 360;
-      heroPhone.classList.remove('is-dragging');
-      if (!reduce) heroPhone.classList.add('is-spring');
-      setSpin(target); setAngles(0, 0);
-      settleUntil = now + 950; dragging = false;
-      setTimeout(function(){ heroPhone.classList.remove('is-spring'); }, 950);
-    }
-    function inertia(now){
-      var dt = Math.min(48, now - lastT); lastT = now;
-      setSpin(spin + vel * dt);
-      vel *= Math.pow(FRICTION, dt / 16.7);
-      if (Math.abs(vel) > VSTOP) { inertiaRaf = requestAnimationFrame(inertia); return; }
-      inertiaRaf = 0; finish(now);
-    }
-    heroPhone.addEventListener('pointerdown', function(e){
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      if (e.target.closest('a')) return;
-      if (inertiaRaf) { cancelAnimationFrame(inertiaRaf); inertiaRaf = 0; }   // catch a spinning phone
-      heroPhone.classList.remove('is-spring');
-      pid = e.pointerId; moved = false; sx = e.clientX; sy = e.clientY;
-      bx = spin; by = parseFloat(heroPhone.style.getPropertyValue('--rx')) || 0;
-      samples = [{t: performance.now(), x: e.clientX}];
-    });
-    document.addEventListener('pointermove', function(e){
-      if (pid === null || e.pointerId !== pid) return;
-      var dx = e.clientX - sx, dy = e.clientY - sy;
-      if (!moved) {
-        if (Math.abs(dx) < THRESH && Math.abs(dy) < THRESH) return;
-        moved = true; dragging = true;
-        heroPhone.classList.add('is-dragging');
-      }
-      var now = performance.now();
-      samples.push({t: now, x: e.clientX});
-      while (samples.length > 2 && now - samples[0].t > 120) samples.shift();
-      setSpin(bx + dx * KY);
-      setAngles(Math.max(-MAX_X, Math.min(MAX_X, by - dy * KX)), 0);
-    }, {passive:true});
-    function endDrag(e){
-      if (pid === null || (e && e.pointerId !== pid)) return;
-      pid = null;
-      if (!moved) { if (dragging) finish(performance.now()); return; }   // a tap that caught a spinning phone: settle it
-      if (heroHint) heroHint.classList.add('gone');
-      swallowClick = true; setTimeout(function(){ swallowClick = false; }, 400);
-      var now = performance.now(), first = samples[0], last = samples[samples.length - 1];
-      vel = 0;
-      if (last && first && last.t - first.t > 16 && now - last.t < 120) {
-        vel = (last.x - first.x) / (last.t - first.t) * KY;          // deg per ms
-        vel = Math.max(-VMAX, Math.min(VMAX, vel));
-      }
-      if (Math.abs(vel) > VSTOP && !reduce) { lastT = now; inertiaRaf = requestAnimationFrame(inertia); }
-      else finish(now);
-    }
-    document.addEventListener('pointerup', endDrag);
-    document.addEventListener('pointercancel', endDrag);
-    heroPhone.addEventListener('click', function(e){
-      if (swallowClick) { swallowClick = false; e.stopPropagation(); e.preventDefault(); }
-    }, true);
-  }
-  if (tiltBox && heroPhone && heroSec && !reduce && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    var armed = false, raf = 0, nx = 0, ny = 0, MAX_Y = 11, MAX_X = 7;
-    function arm(){ armed = true; }
-    heroPhone.addEventListener('animationend', arm, {once:true});
-    setTimeout(arm, 3200); // fallback if the entrance animation never fires
-    function apply(){ raf = 0; setAngles(ny * MAX_X, -nx * MAX_Y); }
-    heroSec.addEventListener('pointermove', function(e){
-      if (!armed || dragging || Date.now() < settleUntil || e.pointerType !== 'mouse') return;
-      if (heroPhone.contains(e.target)) { settle(); return; }
-      var r = tiltBox.getBoundingClientRect();
-      var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-      nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (window.innerWidth * .5)));
-      ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (r.height * .9)));
-      if (!raf) raf = requestAnimationFrame(apply);
-    });
-    function settle(){ if (dragging) return; nx = 0; ny = 0; if (!raf) raf = requestAnimationFrame(apply); }
-    heroSec.addEventListener('pointerleave', settle);
-    // the YouTube iframe swallows pointer events, so settle flat when the cursor reaches the screen itself
-    screenEl.addEventListener('pointerenter', settle);
-  }
 
   // showcase phones: click to play with sound, controls on
   document.querySelectorAll('.play[data-target^="s"]').forEach(function(btn){
