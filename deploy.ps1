@@ -10,9 +10,13 @@ if (-not (Test-Path (Join-Path $root '.git'))) {
 }
 $dst = Join-Path $root 'tifor'
 New-Item -ItemType Directory -Force -Path $dst | Out-Null
-# Mirror (deletes files removed from the source); skip git and deploy-only files
-robocopy $src $dst /MIR /XD .git /XF deploy.ps1 README.md .nojekyll | Out-Null
+# Publish ONLY the website: index.html and the assets folder (allowlist).
+# Everything else in this folder (assessment papers, answer keys, notes, source video, teaching pack) stays private.
+Get-ChildItem -Path $dst -Force | Where-Object { $_.Name -notin @('index.html','assets') } | Remove-Item -Recurse -Force
+Copy-Item (Join-Path $src 'index.html') (Join-Path $dst 'index.html') -Force
+robocopy (Join-Path $src 'assets') (Join-Path $dst 'assets') /MIR | Out-Null
 if ($LASTEXITCODE -ge 8) { throw "robocopy failed with exit code $LASTEXITCODE" }
+$ErrorActionPreference = 'Continue'   # git writes progress/warnings to stderr
 git -C $root add -A tifor
 if (git -C $root status --porcelain tifor) {
   git -C $root commit -m "tifor: deploy $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
